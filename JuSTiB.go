@@ -21,14 +21,15 @@ func main() {
 	// Help message
 	hm := `
 Usage:
-	encrypt    <MESSAGE>   <KEY>  (Encrypts a string using the Caesar Cipher)
-	decrypt    <MESSAGE>   <KEY>  (Decrypts a string using the Caesar Cipher)
-	checkport  <PROTOCOL>  <PORT> (Checks if a port is open)
-	filedelete <DIRECTORY> <FILE> (Deletes a file from CWD and all subdirectories)
-	welcome                       (Shows the welcome message)
-	clear                         (Clears the console)
-	help                          (Show this page, hello)
-	exit                          (Exits the program)
+	encrypt    <MESSAGE>          <KEY>     (Encrypts a string using the Caesar Cipher)
+	decrypt    <MESSAGE>  		  <KEY>     (Decrypts a string using the Caesar Cipher)
+	checkport  <PROTOCOL>         <PORT>    (Checks if a port is open)
+	customping <PROTOCOL:IP:PORT> <MESSAGE> (Send a raw text message to a specified IP & port)
+	filedelete <DIRECTORY>        <FILE>    (Deletes a file from CWD and all subdirectories)
+	welcome                       		    (Shows the welcome message)
+	clear                         		    (Clears the console)
+	help                          		    (Show this page, hello)
+	exit                          		    (Exits the program)
 	`
 
 	fmt.Println(wm)
@@ -81,6 +82,8 @@ Usage:
 		case "filedelete":
 			fmt.Println(FiledeleteCMD(subcommand, subcommand2))
 			break
+		case "customping":
+			fmt.Println(CustomPingCMD(subcommand, subcommand2))
 		default:
 			fmt.Println("Unrecognised command, for help enter 'help'")
 			break
@@ -212,4 +215,32 @@ func FiledeleteCMD(directory, file string) string {
 		}
 	}
 	return strconv.Itoa(count) + " File(s) successfully deleted"
+}
+
+// CustomPing is used to send a rawtext massage to a specified IP through a specified port
+func CustomPingCMD(fullIP, message string) string {
+	var protocol string
+
+	// Splits the protocol and the IP
+	for i := 0; i < len(fullIP); i++ {
+		if string(fullIP[i]) == ":" {
+			protocol = fullIP[:i]
+			fullIP = fullIP[i+1:]
+			break
+		}
+	}
+
+	// Attempts a connection
+	connection, err := net.Dial(protocol, fullIP)
+
+	// If an error is thown it is displayed to user
+	if err != nil {
+		return err.Error()
+	}
+	defer connection.Close()
+
+	fmt.Fprintf(connection, message)
+
+	// A success message is outputted
+	return "Success: " + message + " sent to " + fullIP + " through " + protocol
 }
