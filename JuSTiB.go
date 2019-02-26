@@ -217,7 +217,7 @@ func FiledeleteCMD(directory, file string) string {
 	return strconv.Itoa(count) + " File(s) successfully deleted"
 }
 
-// CustomPing is used to send a rawtext massage to a specified IP through a specified port
+// CustomPingCMD is used to send a rawtext massage to a specified IP through a specified port
 func CustomPingCMD(fullIP, message string) string {
 	var protocol string
 
